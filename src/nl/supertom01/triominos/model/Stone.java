@@ -19,7 +19,7 @@ import java.util.List;
  * The stone class.
  *
  * @author Tom Meulenkamp
- * @version 27-06-2021
+ * @version 01-07-2021
  */
 public class Stone {
 

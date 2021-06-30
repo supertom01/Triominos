@@ -1,15 +1,20 @@
-package nl.supertom01.triominos.controller;
+package nl.supertom01.triominos.model;
 
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
+
 import nl.supertom01.triominos.exceptions.PlacementException;
-import nl.supertom01.triominos.model.Orientation;
-import nl.supertom01.triominos.model.Stone;
 
 import java.util.List;
 
+/**
+ * The board class.
+ *
+ * @author Tom Meulenkamp
+ * @version 01-07-2021
+ */
 public class Board {
 
     private List<Stone> unUsedStones;

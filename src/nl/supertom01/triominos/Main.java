@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import nl.supertom01.triominos.controller.Board;
+import nl.supertom01.triominos.model.Board;
 import nl.supertom01.triominos.model.Stone;
 
 public class Main extends Application {

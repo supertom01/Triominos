@@ -1,6 +1,6 @@
 package nl.supertom01.triominos.test;
 
-import nl.supertom01.triominos.controller.Board;
+import nl.supertom01.triominos.model.Board;
 import nl.supertom01.triominos.exceptions.PlacementException;
 import nl.supertom01.triominos.model.Stone;
 import org.junit.jupiter.api.Assertions;
