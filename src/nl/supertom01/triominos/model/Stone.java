@@ -1,4 +1,14 @@
-package model;
+package nl.supertom01.triominos.model;
+
+import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The stone model class.
+ * The stone class.
  *
  * @author Tom Meulenkamp
  * @version 27-06-2021
@@ -21,29 +31,16 @@ public class Stone {
      *  \   /      OR    /   \
      *   \/             /     \
      *                  ───────
-     *  TOP              BOTTOM
+     *  TOP              DOWN
      */
     private Orientation orientation;
 
     /** The values that are on a stone. */
     private final int[] values;
 
-    /**
-     * The neighbours of this stone on the board.
-     *         1
-     *     ────────
-     *     \ 0 1 /         0   /\   1
-     *   0  \ 2 / 2    OR    / 0 \
-     *       \/             / 2 1 \
-     *                      ───────
-     *                         2
-     */
-    private Stone[] neighbours;
-
     public Stone(int nr1, int nr2, int nr3) {
         this.orientation = Orientation.DOWN;
         this.values = new int[]{nr1, nr2, nr3};
-        this.neighbours = new Stone[3];
     }
 
     public Orientation getOrientation() {
@@ -56,10 +53,6 @@ public class Stone {
 
     public void setOrientation(Orientation orientation) {
         this.orientation = orientation;
-    }
-
-    public Stone[] getNeighbours() {
-        return neighbours;
     }
 
     /**
@@ -93,57 +86,67 @@ public class Stone {
     }
 
     /**
-     * Check if this stone is compatible with the provided set of neighbours.
-     * @param neighbours The set of neighbours to check for placing this stone.
-     *                   The neighbours should be placed in the order specified in this.neighbours.
-     *                   neighbours.length == 3
-     * @return true if the stone can be placed, taking into account the neighbours.
+     * Converts the Java object to a pane that can be used in JavaFX.
+     * @return A pane that contains a white triangle, with the numbers that should be on it.
      */
-    public boolean match(Stone[] neighbours) {
-        boolean compatibleOrientation = true;
-        int nonNullNeighbours = 0;
-        for (Stone neighbour : neighbours) {
-            if (neighbour != null) {
-                compatibleOrientation = compatibleOrientation && this.orientation != neighbour.getOrientation();
-                nonNullNeighbours++;
-            }
-        }
-        if (nonNullNeighbours == 0 || !compatibleOrientation) {
-            return false;
-        }
-
-        boolean compatibleValues = true;
-        for (int i = 0; i < neighbours.length; i++) {
-            int[] nVals = neighbours[i].getValues();
-            if (i == 0) {
-                compatibleValues = nVals[0] == values[0] && nVals[2] == values[2];
-            } else if (i == 1) {
-                compatibleValues = compatibleValues && nVals[0] == values[0] && nVals[1] == values[1];
-            } else {
-                compatibleValues = compatibleValues && nVals[1] == values[1] && nVals[2] == values[2];
-            }
-        }
-        return compatibleValues;
-    }
-
-    /**
-     * Connects this stone to its neighbours when placed on the board.
-     * @requires That the neighbours are compatible with this stone.
-     *           The current neighbours should all be null (this stone shouldn't be placed yet...)
-     * @param    neighbours The neighbouring stones.
-     */
-    public void place(Stone[] neighbours) {
-        if (neighbours[0] != null) {
-            neighbours[0].getNeighbours()[1] = this;
-        }
-        if (neighbours[1] != null) {
-            neighbours[1].getNeighbours()[2] = this;
-        }
-        if (neighbours[2] != null) {
-            neighbours[2].getNeighbours()[0] = this;
+    public Pane toJavaFX() {
+        Point2D p1;
+        Point2D p2;
+        Point2D p3;
+        if (this.orientation == Orientation.TOP) {
+            p1 = new Point2D(0,0);
+            p2 = new Point2D(150, 0);
+            p3 = new Point2D(75,130);
+        } else {
+            p1 = new Point2D(75,0);
+            p2 = new Point2D(0, 130);
+            p3 = new Point2D(150,130);
         }
 
-        this.neighbours = neighbours;
+        Point2D center = p1.midpoint(p2).midpoint(p3);
+        Point2D p1Corrected = p1.subtract(center);
+        Point2D p2Corrected = p2.subtract(center);
+        Point2D p3Corrected = p3.subtract(center);
+
+        Polygon triangle = new Polygon(
+                p1Corrected.getX(), p1Corrected.getY(),
+                p2Corrected.getX(), p2Corrected.getY(),
+                p3Corrected.getX(), p3Corrected.getY()
+        );
+        triangle.setFill(Color.WHITE);
+        triangle.setStroke(Color.BLACK);
+        triangle.setLayoutX(center.getX());
+        triangle.setLayoutY(center.getY());
+
+        Text t1 = new Text();
+        Text t2 = new Text();
+        Text t3 = new Text();
+        t1.setText(String.valueOf(this.values[0]));
+        t2.setText(String.valueOf(this.values[1]));
+        t3.setText(String.valueOf(this.values[2]));
+        t1.setFont(Font.font("arial", 30));
+        t2.setFont(Font.font("arial", 30));
+        t3.setFont(Font.font("arial", 30));
+
+        StackPane pane = new StackPane();
+        pane.getChildren().addAll(triangle, t1, t2, t3);
+        if(this.orientation == Orientation.TOP) {
+            StackPane.setAlignment(t1, Pos.TOP_LEFT);
+            StackPane.setMargin(t1, new Insets(0, 0, 0, 20));
+            StackPane.setAlignment(t2, Pos.TOP_RIGHT);
+            StackPane.setMargin(t2, new Insets(0, 20, 0, 0));
+            StackPane.setAlignment(t3, Pos.BOTTOM_CENTER);
+            StackPane.setMargin(t3, new Insets(0, 0, 20, 0));
+        } else {
+            StackPane.setAlignment(t1, Pos.TOP_CENTER);
+            StackPane.setMargin(t1, new Insets(20, 0, 0, 0));
+            StackPane.setAlignment(t2, Pos.BOTTOM_RIGHT);
+            StackPane.setMargin(t2, new Insets(0, 20, 0, 0));
+            StackPane.setAlignment(t3, Pos.BOTTOM_LEFT);
+            StackPane.setMargin(t3, new Insets(0, 0, 0, 20));
+        }
+
+        return pane;
     }
 
     /**

@@ -1,7 +1,7 @@
-package test;
+package nl.supertom01.triominos.test;
 
-import model.Orientation;
-import model.Stone;
+import nl.supertom01.triominos.model.Orientation;
+import nl.supertom01.triominos.model.Stone;
 import org.junit.Before;
 import org.junit.Test;
 
