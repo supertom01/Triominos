@@ -5,26 +5,42 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import nl.supertom01.triominos.model.Board;
-import nl.supertom01.triominos.model.Stone;
+import nl.supertom01.triominos.model.Game;
+import nl.supertom01.triominos.model.Move;
+import nl.supertom01.triominos.model.Player;
 
 public class Main extends Application {
 
-    private Board board;
-
     @Override
     public void start(Stage primaryStage) throws Exception {
-        board = new Board();
 
-        Stone s1 = new Stone(1, 2, 3);
-        Stone s2 = new Stone(1, 2, 1);
-        s2.rotateRight();
-        Stone s3 = new Stone(1, 1, 1);
-        board.placeStone(s1, 56, 56);
-        board.placeStone(s2, 57, 56);
-        board.placeStone(s3, 57, 55);
+        Player p1 = new Player("Test 1") {
+            @Override
+            public Move determineMove(Board board) {
+                return null;
+            }
+        };
 
-        Scene scene = new Scene(board.toJavaFX(), 600, 300);
-        scene.setFill(Color.BROWN);
+        Player p2 = new Player("Test 2") {
+            @Override
+            public Move determineMove(Board board) {
+                return null;
+            }
+        };
+
+        Player p3 = new Player("Test 3") {
+            @Override
+            public Move determineMove(Board board) {
+                return null;
+            }
+        };
+
+        Game game = new Game(new Player[]{p1, p2, p3});
+        game.initialize();
+        game.play();
+
+        Scene scene = new Scene(game.toJavaFX(), 600, 300);
+        scene.setFill(Color.DARKBLUE);
 
         primaryStage.setTitle("Triominos");
         primaryStage.setScene(scene);

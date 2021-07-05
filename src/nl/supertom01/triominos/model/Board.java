@@ -6,6 +6,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
 
 import nl.supertom01.triominos.exceptions.PlacementException;
+import nl.supertom01.triominos.styles.Style;
 
 import java.util.List;
 
@@ -17,12 +18,14 @@ import java.util.List;
  */
 public class Board {
 
-    private List<Stone> unUsedStones;
-    private Stone[][] board;
+    public static final int NR_STONES = 56;
+
+    private final List<Stone> stack;
+    private final Stone[][] board;
 
     public Board() {
-        this.unUsedStones = Stone.shuffle();
-        this.board = new Stone[112][112];
+        this.stack = Stone.shuffle();
+        this.board = new Stone[NR_STONES * 2][NR_STONES * 2];
     }
 
     /**
@@ -30,30 +33,40 @@ public class Board {
      * @return True if the board is empty, otherwise false.
      */
     public boolean isEmpty() {
-        boolean empty = true;
         for(Stone[] row : board) {
             for(Stone stone : row) {
                 if(stone != null) {
-                    empty = false;
-                    break;
+                    return false;
                 }
             }
         }
-        return empty;
+        return true;
+    }
+
+    /**
+     * Get a new stone from the stack.
+     * @return The stone
+     */
+    public Stone getFromStack() {
+        if(!stack.isEmpty()) {
+            return stack.remove(0);
+        }
+        return null;
     }
 
     /**
      * Places a stone on the board.
-     * @param stone The stone to place.
-     * @param x     The x-coordinate on the board.
-     * @param y     The y-coordinate on the board.
+     * @param move  The move to do on the board.
      * @return      Returns the number of points that are gained with the placement.
+     * @throws PlacementException Thrown when a move cannot be performed.
      */
-    public int placeStone(Stone stone, int x, int y) throws PlacementException {
+    public int placeStone(Move move) throws PlacementException {
+        int x = move.getX();
+        int y = move.getY();
         if(this.board[x][y] != null) {
             throw new PlacementException("This location on the board has already a stone on it.");
         }
-        this.board[x][y] = stone;
+        this.board[x][y] = move.getStone();
 
         // TODO: Implement the point system.
         return -1;
@@ -61,12 +74,14 @@ public class Board {
 
     /**
      * Checks if a stone can be placed on the provided location on the board.
-     * @param stone The stone to place.
-     * @param x     The x-coordinate on the board.
-     * @param y     The y-coordinate on the board.
+     * @param move  The move to do on the board.
      * @return      True if the stone can be placed, otherwise false.
      */
-    public boolean isValidMove(Stone stone, int x, int y) {
+    public boolean isValidMove(Move move) {
+        int x = move.getX();
+        int y = move.getY();
+        Stone stone = move.getStone();
+
         // If the current board is empty, any stone is valid as a placement.
         if(isEmpty()) {
             return true;
@@ -137,8 +152,8 @@ public class Board {
      * @return A pane that contains all the stones that are on the board.
      */
     public Pane toJavaFX() {
-        // Find the first top left index that has a stone in it.
-        int[] firstIndex = new int[]{112,112};
+        // Find the extreme values of the grid that contain stones.
+        int[] firstIndex = new int[]{NR_STONES * 2, NR_STONES * 2};
         int[] lastIndex  = new int[]{0,0};
         for (int i = 0; i < this.board.length; i++) {
             for (int j = 0; j < this.board[i].length; j++) {
@@ -156,6 +171,7 @@ public class Board {
                     if(i > lastIndex[0]) {
                         lastIndex[0] = i;
                     }
+                    // Find the maximum y variable.
                     if(j > lastIndex[1]) {
                         lastIndex[1] = j;
                     }
@@ -167,10 +183,10 @@ public class Board {
 
         GridPane pane = new GridPane();
         for (int i = 0; i < width; i++) {
-            pane.getColumnConstraints().add(new ColumnConstraints(75));
+            pane.getColumnConstraints().add(new ColumnConstraints(Style.CENTER));
         }
         for (int i = 0; i < height; i++) {
-            pane.getRowConstraints().add(new RowConstraints(130));
+            pane.getRowConstraints().add(new RowConstraints(Style.HEIGHT));
         }
 
         for (int i = 0; i < width; i++) {

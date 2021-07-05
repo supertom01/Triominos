@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import nl.supertom01.triominos.styles.Style;
+
 /**
  * The stone class.
  *
@@ -53,6 +55,22 @@ public class Stone {
 
     public void setOrientation(Orientation orientation) {
         this.orientation = orientation;
+    }
+
+    /**
+     * Returns true if this stone is a triple (each number on the stone is equal).
+     * @return True if this stone is a triple and otherwise false.
+     */
+    public boolean isTriple() {
+        return this.values[0] == this.values[1] && this.values[1] == this.values[2];
+    }
+
+    /**
+     * Determine the sum of the stone.
+     * @return The sum of this stone.
+     */
+    public int getSum() {
+        return this.values[0] + this.values[1] + this.values[2];
     }
 
     /**
@@ -95,12 +113,12 @@ public class Stone {
         Point2D p3;
         if (this.orientation == Orientation.TOP) {
             p1 = new Point2D(0,0);
-            p2 = new Point2D(150, 0);
-            p3 = new Point2D(75,130);
+            p2 = new Point2D(Style.WIDTH, 0);
+            p3 = new Point2D(Style.CENTER, Style.HEIGHT);
         } else {
-            p1 = new Point2D(75,0);
-            p2 = new Point2D(0, 130);
-            p3 = new Point2D(150,130);
+            p1 = new Point2D(Style.CENTER,0);
+            p2 = new Point2D(0, Style.HEIGHT);
+            p3 = new Point2D(Style.WIDTH,Style.HEIGHT);
         }
 
         Point2D center = p1.midpoint(p2).midpoint(p3);
@@ -124,26 +142,26 @@ public class Stone {
         t1.setText(String.valueOf(this.values[0]));
         t2.setText(String.valueOf(this.values[1]));
         t3.setText(String.valueOf(this.values[2]));
-        t1.setFont(Font.font("arial", 30));
-        t2.setFont(Font.font("arial", 30));
-        t3.setFont(Font.font("arial", 30));
+        t1.setFont(Font.font(Style.FONT_FAMILY, Style.FONT_SIZE_STONE));
+        t2.setFont(Font.font(Style.FONT_FAMILY, Style.FONT_SIZE_STONE));
+        t3.setFont(Font.font(Style.FONT_FAMILY, Style.FONT_SIZE_STONE));
 
         StackPane pane = new StackPane();
         pane.getChildren().addAll(triangle, t1, t2, t3);
         if(this.orientation == Orientation.TOP) {
             StackPane.setAlignment(t1, Pos.TOP_LEFT);
-            StackPane.setMargin(t1, new Insets(0, 0, 0, 20));
+            StackPane.setMargin(t1, new Insets(0, 0, 0, Style.FONT_MARGIN));
             StackPane.setAlignment(t2, Pos.TOP_RIGHT);
-            StackPane.setMargin(t2, new Insets(0, 20, 0, 0));
+            StackPane.setMargin(t2, new Insets(0, Style.FONT_MARGIN, 0, 0));
             StackPane.setAlignment(t3, Pos.BOTTOM_CENTER);
-            StackPane.setMargin(t3, new Insets(0, 0, 20, 0));
+            StackPane.setMargin(t3, new Insets(0, 0, Style.FONT_MARGIN, 0));
         } else {
             StackPane.setAlignment(t1, Pos.TOP_CENTER);
-            StackPane.setMargin(t1, new Insets(20, 0, 0, 0));
+            StackPane.setMargin(t1, new Insets(Style.FONT_MARGIN, 0, 0, 0));
             StackPane.setAlignment(t2, Pos.BOTTOM_RIGHT);
-            StackPane.setMargin(t2, new Insets(0, 20, 0, 0));
+            StackPane.setMargin(t2, new Insets(0, Style.FONT_MARGIN, 0, 0));
             StackPane.setAlignment(t3, Pos.BOTTOM_LEFT);
-            StackPane.setMargin(t3, new Insets(0, 0, 0, 20));
+            StackPane.setMargin(t3, new Insets(0, 0, 0, Style.FONT_MARGIN));
         }
 
         return pane;
