@@ -1,5 +1,6 @@
 package nl.supertom01.triominos.model;
 
+import javafx.scene.Scene;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
@@ -10,6 +11,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
+import nl.supertom01.triominos.controller.HumanPlayer;
 import nl.supertom01.triominos.styles.Style;
 
 /**
@@ -29,11 +31,13 @@ public class Game {
     /** The players that are taking part in the game. */
     private final Player[] players;
 
-    private int currentPlayer;
-
     public Game(Player[] players) {
         this.board = new Board();
         this.players = players;
+    }
+
+    public Board getBoard() {
+        return board;
     }
 
     /**
@@ -64,7 +68,7 @@ public class Game {
     /**
      * Determines the player that may start.
      */
-    public void play() {
+    public int getFirstPlayer() {
         // Determine which player may start.
         // Either the player with the highest triple (or if no one has a triple, start with the highest stone).
         Player highestTriplePlayer = null;
@@ -85,44 +89,86 @@ public class Game {
         }
 
         if(highestTriplePlayer != null) {
-            currentPlayer = getPlayerIndex(highestTriplePlayer);
+            return getPlayerIndex(highestTriplePlayer);
         } else {
-            currentPlayer = getPlayerIndex(highestPlayer);
+            return getPlayerIndex(highestPlayer);
         }
-
-        while(!isFinished()) {
-            this.players[currentPlayer].makeMove(this.board);
-            update();
-            currentPlayer = (currentPlayer + 1) % players.length;
-        }
-
-        // TODO: Check if one of the players has 400 points or more, if so, the game stops otherwise a new round starts.
 
     }
 
     /**
      * Checks if the current round is finished.
      * A round is finished if one person has no stones left or if no one is able to place a stone.
-     * @return true if the game has indeed finished.
+     * @return true if this round has indeed finished.
      */
-    public boolean isFinished() {
-        // TODO: Implement.
+    public boolean isRoundFinished() {
+        if(board.getStackSize() != 0) {
+            for (Player player : this.players) {
+                if (player.getStones().size() == 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
         return true;
     }
 
     /**
-     * Updates the board and shows the user the progress of the game.
+     * Checks if the complete game has finished.
+     * A game has finished if a round is finished and if at least one of the players has more than 400 points.
+     * @return true if the game has indeed finished.
      */
-    public void update() {
-        // TODO: Implement.
-        // TODO: Might want to move this to the Main class, where JavaFX is working.
+    public boolean isFinished() {
+        if (isRoundFinished()) {
+            for (Player player : this.players) {
+                if (player.getPoints() >= 400) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * Determines the winner of the game, based on the player with the maximum score.
+     * @return The winner of the game.
+     */
+    public Player getWinner() {
+        Player winner = players[0];
+        for (Player player : this.players) {
+            if (player.getPoints() > winner.getPoints()) {
+                winner = player;
+            }
+        }
+        return winner;
+    }
+
+    /**
+     * Updates the board and shows the user the progress of the game.
+     * @param scene The scene that shows this game.
+     * @param currentPlayer The player that is currently making a move.
+     */
+    public void update(Scene scene, int currentPlayer) {
+        scene.setRoot(toJavaFX(currentPlayer));
     }
 
     /**
      * Transforms the game object into one that can be used in JavaFX.
+     * @param currentPlayer The current player that is making a move.
      * @return A JavaFX pane that can be used in the GUI.
      */
-    public Pane toJavaFX() {
+    public Pane toJavaFX(int currentPlayer) {
+        return toJavaFX(currentPlayer, this.board);
+    }
+
+    /**
+     * Transforms the game object into one that can be used in JavaFX.
+     * @param currentPlayer The current player that is making a move.
+     * @param board The board pane that should be displayed in the game.
+     * @return A JavaFX pane that can be used in the GUI.
+     */
+    public Pane toJavaFX(int currentPlayer, Pane board) {
         GridPane pane = new GridPane();
 
         // Set up the left bar.
@@ -161,9 +207,8 @@ public class Game {
 
         pane.add(leftBar, 0, 0);
 
-        pane.add(this.board.toJavaFX(), 1, 0);
+        pane.add(board, 1, 0);
         return pane;
     }
-
 
 }

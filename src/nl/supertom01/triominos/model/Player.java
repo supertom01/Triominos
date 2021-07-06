@@ -58,14 +58,14 @@ public abstract class Player {
 
     /**
      * Determine the move that the player wants to make.
-     * @param board The board to make a move on.
+     * @param board The GUI scene.
      * @return A valid move that has been chosen by the player.
      */
     public abstract Move determineMove(Board board);
 
     /**
      * Makes a move on the board.
-     * @param board The board to make a move on.
+     * @param board The board on which the move should be made.
      */
     public void makeMove(Board board) {
         Move move = determineMove(board);

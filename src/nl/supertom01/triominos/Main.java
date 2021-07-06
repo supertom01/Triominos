@@ -2,49 +2,43 @@ package nl.supertom01.triominos;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import nl.supertom01.triominos.controller.HumanPlayer;
 import nl.supertom01.triominos.model.Board;
 import nl.supertom01.triominos.model.Game;
 import nl.supertom01.triominos.model.Move;
 import nl.supertom01.triominos.model.Player;
+import nl.supertom01.triominos.model.Stone;
 
 public class Main extends Application {
+
+    private Game game;
+    private int currentPlayer;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        Player p1 = new Player("Test 1") {
-            @Override
-            public Move determineMove(Board board) {
-                return null;
-            }
+        // TODO: Initialize the players.
+        Player[] players = new Player[]{
+            new HumanPlayer("Tom"),
+            new HumanPlayer("Robin")
         };
 
-        Player p2 = new Player("Test 2") {
-            @Override
-            public Move determineMove(Board board) {
-                return null;
-            }
-        };
+        Board board = new Board();
+        board.placeStone(new Move(new Stone(1,2,3), 56, 56));
+        board.update(false);
 
-        Player p3 = new Player("Test 3") {
-            @Override
-            public Move determineMove(Board board) {
-                return null;
-            }
-        };
-
-        Game game = new Game(new Player[]{p1, p2, p3});
-        game.initialize();
-        game.play();
-
-        Scene scene = new Scene(game.toJavaFX(), 600, 300);
-        scene.setFill(Color.DARKBLUE);
+        Scene scene = new Scene(board, 600, 300);
+        scene.setFill(Color.BLUE);
 
         primaryStage.setTitle("Triominos");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        // TODO: Check if the game has finished, or if we need another round.
+
     }
 
     public static void main(String[] args) {

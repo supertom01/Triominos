@@ -1,21 +1,18 @@
 package nl.supertom01.triominos.model;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import nl.supertom01.triominos.styles.Style;
+import nl.supertom01.triominos.view.Triangle;
 
 /**
  * The stone class.
@@ -108,33 +105,9 @@ public class Stone {
      * @return A pane that contains a white triangle, with the numbers that should be on it.
      */
     public Pane toJavaFX() {
-        Point2D p1;
-        Point2D p2;
-        Point2D p3;
-        if (this.orientation == Orientation.TOP) {
-            p1 = new Point2D(0,0);
-            p2 = new Point2D(Style.WIDTH, 0);
-            p3 = new Point2D(Style.CENTER, Style.HEIGHT);
-        } else {
-            p1 = new Point2D(Style.CENTER,0);
-            p2 = new Point2D(0, Style.HEIGHT);
-            p3 = new Point2D(Style.WIDTH,Style.HEIGHT);
-        }
-
-        Point2D center = p1.midpoint(p2).midpoint(p3);
-        Point2D p1Corrected = p1.subtract(center);
-        Point2D p2Corrected = p2.subtract(center);
-        Point2D p3Corrected = p3.subtract(center);
-
-        Polygon triangle = new Polygon(
-                p1Corrected.getX(), p1Corrected.getY(),
-                p2Corrected.getX(), p2Corrected.getY(),
-                p3Corrected.getX(), p3Corrected.getY()
-        );
+        Triangle triangle = new Triangle(Style.WIDTH, this.orientation);
         triangle.setFill(Color.WHITE);
         triangle.setStroke(Color.BLACK);
-        triangle.setLayoutX(center.getX());
-        triangle.setLayoutY(center.getY());
 
         Text t1 = new Text();
         Text t2 = new Text();
@@ -204,7 +177,7 @@ public class Stone {
      * @return A list with stones.
      */
     public static List<Stone> shuffle() {
-        ArrayList<Stone> stones = new ArrayList<>(216);
+        ArrayList<Stone> stones = new ArrayList<>(Board.NR_STONES);
         for (int i = 0; i < 6; i++) {
             for (int j = i; j < 6; j++) {
                 for (int k = j; k < 6; k++) {
