@@ -82,6 +82,19 @@ public class Board extends StackPane {
     }
 
     /**
+     * Removes a previously placed stone.
+     * USED FOR DEBUGGING PURPOSES ONLY!
+     * @param move The move that was performed on the board.
+     */
+    public void removeStone(Move move) {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                board[move.getX()][move.getY()] = null;
+            }
+        }
+    }
+
+    /**
      * Checks if a stone can be placed on the provided location on the board.
      * @param move  The move to do on the board.
      * @return      True if the stone can be placed, otherwise false.
