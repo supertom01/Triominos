@@ -14,7 +14,7 @@ import nl.supertom01.triominos.exceptions.PlacementException;
 public abstract class Player {
 
     /** The stones in the player's inventory. */
-    private final List<Stone> stones;
+    private List<Stone> stones;
 
     /** The name of this player. */
     private final String username;
@@ -57,6 +57,13 @@ public abstract class Player {
     }
 
     /**
+     * Empties the players stones.
+     */
+    public void resetStones() {
+        this.stones = new ArrayList<>();
+    }
+
+    /**
      * Determine the move that the player wants to make.
      * @param board The GUI scene.
      * @return A valid move that has been chosen by the player.
@@ -69,12 +76,13 @@ public abstract class Player {
      */
     public void makeMove(Board board) {
         Move move = determineMove(board);
-        int points = 0;
+        int points = board.determinePoints(move, this);
         try {
-            points = board.placeStone(move);
+            board.placeStone(move);
         } catch (PlacementException e) {
             System.err.printf("[ERROR] [PLAYER] %s: \"%s\"", getUsername(), e.getMessage());
         }
+        stones.remove(move.getStone());
         addPoints(points);
     }
 }

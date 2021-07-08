@@ -28,7 +28,7 @@ public class Main extends Application {
 
         Board board = new Board();
         board.placeStone(new Move(new Stone(1,2,3), 56, 56));
-        board.update(false);
+        board.update(true);
 
         Scene scene = new Scene(board, 600, 300);
         scene.setFill(Color.BLUE);

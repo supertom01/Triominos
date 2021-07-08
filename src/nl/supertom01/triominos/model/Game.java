@@ -1,16 +1,13 @@
 package nl.supertom01.triominos.model;
 
-import javafx.scene.Scene;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-
 import nl.supertom01.triominos.controller.HumanPlayer;
 import nl.supertom01.triominos.styles.Style;
 
@@ -20,7 +17,7 @@ import nl.supertom01.triominos.styles.Style;
  *
  * @author Tom Meulenkamp
  */
-public class Game {
+public class Game extends GridPane {
 
     /** The amount of stones with which each player starts. */
     public static final int STOCK_SIZE = 10;
@@ -30,6 +27,9 @@ public class Game {
 
     /** The players that are taking part in the game. */
     private final Player[] players;
+
+    /** The current player */
+    private int currentPlayer;
 
     public Game(Player[] players) {
         this.board = new Board();
@@ -45,6 +45,7 @@ public class Game {
      */
     public void initialize() {
         for (Player player : this.players) {
+            player.resetStones();
             for (int i = 0; i < STOCK_SIZE; i++) {
                 player.addStone(this.board.getFromStack());
             }
@@ -144,33 +145,21 @@ public class Game {
         return winner;
     }
 
-    /**
-     * Updates the board and shows the user the progress of the game.
-     * @param scene The scene that shows this game.
-     * @param currentPlayer The player that is currently making a move.
-     */
-    public void update(Scene scene, int currentPlayer) {
-        scene.setRoot(toJavaFX(currentPlayer));
+    public void play() {
+        update();
+        while(!isFinished()) {
+            initialize();
+            currentPlayer = getFirstPlayer();
+            while(!isRoundFinished()) {
+                board.update(players[currentPlayer] instanceof HumanPlayer);
+                players[currentPlayer].makeMove(board);
+                update();
+                currentPlayer = (currentPlayer + 1) % players.length;
+            }
+        }
     }
 
-    /**
-     * Transforms the game object into one that can be used in JavaFX.
-     * @param currentPlayer The current player that is making a move.
-     * @return A JavaFX pane that can be used in the GUI.
-     */
-    public Pane toJavaFX(int currentPlayer) {
-        return toJavaFX(currentPlayer, this.board);
-    }
-
-    /**
-     * Transforms the game object into one that can be used in JavaFX.
-     * @param currentPlayer The current player that is making a move.
-     * @param board The board pane that should be displayed in the game.
-     * @return A JavaFX pane that can be used in the GUI.
-     */
-    public Pane toJavaFX(int currentPlayer, Pane board) {
-        GridPane pane = new GridPane();
-
+    public void update() {
         // Set up the left bar.
         GridPane leftBar = new GridPane();
         leftBar.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
@@ -205,10 +194,8 @@ public class Game {
         // Display the stones of the current player.
         // TODO: Implement.
 
-        pane.add(leftBar, 0, 0);
-
-        pane.add(board, 1, 0);
-        return pane;
+        this.add(leftBar, 0, 0);
+        this.add(board, 1, 0);
     }
 
 }

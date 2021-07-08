@@ -25,6 +25,9 @@ public class Board extends StackPane {
     private final List<Stone> stack;
     private final Stone[][] board;
 
+    /**
+     * Constructs a new board with all the available stones shuffled and with a 112 x 112 matrix.
+     */
     public Board() {
         this.stack = Stone.shuffle();
         this.board = new Stone[NR_STONES * 2][NR_STONES * 2];
@@ -56,6 +59,10 @@ public class Board extends StackPane {
         return null;
     }
 
+    /**
+     * Get the number of remaining stones on the stack.
+     * @return The number of remaining stones.
+     */
     public int getStackSize() {
         return stack.size();
     }
@@ -63,19 +70,15 @@ public class Board extends StackPane {
     /**
      * Places a stone on the board.
      * @param move  The move to do on the board.
-     * @return      Returns the number of points that are gained with the placement.
      * @throws PlacementException Thrown when a move cannot be performed.
      */
-    public int placeStone(Move move) throws PlacementException {
+    public void placeStone(Move move) throws PlacementException {
         int x = move.getX();
         int y = move.getY();
         if(this.board[x][y] != null) {
             throw new PlacementException("This location on the board has already a stone on it.");
         }
         this.board[x][y] = move.getStone();
-
-        // TODO: Implement the point system.
-        return -1;
     }
 
     /**
@@ -151,6 +154,77 @@ public class Board extends StackPane {
             }
         }
         return matchingNumbers;
+    }
+
+    /**
+     * Determines the number of points one gains by performing a given move.
+     * @requires This method should be called BEFORE the stone is removed from the players hand.
+     * @param move  The move to determine the points of.
+     * @return The number of points that are given for this move.
+     */
+    public int determinePoints(Move move, Player player) {
+        // Drawing a stone costs 5 points.
+        if(move == null) {
+            return -5;
+        }
+
+        // Each stone is worth the points of its sum.
+        int points = move.getStone().getSum();
+
+        if(this.isEmpty() && move.getStone().isTriple()) {
+            // Start the game of with a triple 0.
+            if(points == 0) {
+                points = 40;
+            }
+            // Start the game of with a triple (not 0).
+            else {
+                points += 10;
+            }
+        }
+
+        // Check if a hexagon was completed.
+        int x = move.getX();
+        int y = move.getY();
+        boolean hexagonComplete = false;
+        if(board[x][y - 1] == null) {
+            if(board[x - 1][y] != null && board[x + 1][y] != null) {
+                // 2
+                hexagonComplete = board[x - 1][y + 1] != null &&
+                    board[x][y + 1] != null && board[x + 1][y + 1] != null;
+            } else if (board[x - 1][y] != null) {
+                // 3
+                hexagonComplete = board[x - 2][y] != null && board[x][y + 1] != null &&
+                    board[x - 1][y + 1] != null && board[x - 2][y + 1] != null;
+            } else if (board[x + 1][y] != null) {
+                // 1
+                hexagonComplete = board[x + 2][y] != null && board[x][y + 1] != null &&
+                    board[x + 1][y + 1] != null && board[x + 2][y + 1] != null;
+            }
+        } else {
+            if(board[x - 1][y] != null && board[x + 1][y] != null) {
+                // 5
+                hexagonComplete = board[x][y - 1] != null &&
+                    board[x - 1][y - 1] != null && board[x + 1][y - 1] != null;
+            } else if (board[x - 1][y] != null) {
+                // 6
+                hexagonComplete = board[x - 2][y] != null && board[x][y - 1] != null &&
+                    board[x - 1][y - 1] != null && board[x - 2][y - 1] != null;
+            } else if (board[x + 1][y] != null) {
+                // 4
+                hexagonComplete = board[x + 2][y] != null && board[x][y - 1] != null &&
+                    board[x + 1][y - 1] != null && board[x + 2][y - 1] != null;
+            }
+        }
+
+        if(hexagonComplete) {
+            points += 50;
+        }
+
+        // Clearing all the tiles from your hand is 25 points worth.
+        if(player.getStones().size() == 1) {
+            points += 25;
+        }
+        return points;
     }
 
     /**
